@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        idk {
+            border: 1px solid white;
+            position: absolute;
+            transition: all 100;
+            --width: 20px;
+            width: 20px;
+            --height: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+    </style>
+    <script>
+        var mouseX, mouseY;
+        const idkRule = document.styleSheets[0].rules[0];
+        const boxWidth = idkRule.style.getPropertyValue("--width"), boxHeight = idkRule.style.getPropertyValue("--height");
+        const max = 10;
+
+        window.addEventListener("mousemove", function (e) { mouseX = e.clientX; mouseY = e.clientY });
+
+        function makeBox() {
+            checkBox();
+            var box = document.createElement("idk");
+            box.style.top = mouseY - boxHeight.substring(0, boxHeight.length-2)/2 + "px";
+            box.style.left = mouseX - boxWidth.substring(0, boxWidth.length-2)/2 + "px";
+            document.body.appendChild(box);
+        }
+
+        function checkBox() {
+            var boxes = document.getElementsByTagName("idk");
+            while (boxes.length >= max) {
+                document.body.removeChild(boxes[0]);
+            }
+        }
+    </script>
+</head>
+
+<body bgcolor="#000" onload="setInterval(makeBox, 10);">
+
+</body>
+
+</html>

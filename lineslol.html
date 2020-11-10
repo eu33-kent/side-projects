@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        .line {
+            width: 100px;
+            height: 100px;
+            border: 2px white solid;
+            border-left: 0;
+            border-top: 0;
+            border-bottom: 0;
+            box-sizing: border-box;
+            transition: all 2s cubic-bezier(0.75, 0, 0.25, 1);
+            position: absolute;
+        }
+    </style>
+    <script>
+        function populate(amt) {
+            for (let i = 0; i < amt; i++) {
+                let box = document.createElement("div");
+                box.classList.add("line");
+                //randomize(box);
+                changeLine(box);
+                document.body.appendChild(box);
+            }
+            setInterval(moveBoxes, 2000);
+        }
+
+        function moveBoxes() {
+            let boxes = document.getElementsByClassName("line");
+            for (let box of boxes) {
+                randomize(box);
+                changeLine(box);
+            }
+        }
+
+        function randomize(box) {
+            let moveAmt = 200;
+            let safeAmt = 50;
+            if (typeof box.xVal === "undefined") box.xVal = getRand(moveAmt + safeAmt, window.innerWidth - box.getBoundingClientRect().width - moveAmt - safeAmt);
+            if (typeof box.yVal === "undefined") box.yVal = getRand(moveAmt + safeAmt, window.innerHeight - box.getBoundingClientRect().height - moveAmt - safeAmt);
+            if (typeof box.rotVal === "undefined") box.rotVal = getRand(0, 360);
+            if (box.getBoundingClientRect().x <= moveAmt + safeAmt) box.xVal += getRand(0, moveAmt);
+            else if (box.getBoundingClientRect().x + box.getBoundingClientRect().width >= window.innerWidth - moveAmt - safeAmt) box.xVal += getRand(-moveAmt, 0);
+            else box.xVal += getRand(-moveAmt, moveAmt);
+            if (box.getBoundingClientRect().y <= moveAmt + safeAmt) box.yVal += getRand(0, moveAmt);
+            else if (box.getBoundingClientRect().y + box.getBoundingClientRect().height >= window.innerHeight - moveAmt - safeAmt) box.yVal += getRand(-moveAmt, 0);
+            else box.yVal += getRand(-moveAmt, moveAmt);
+            box.rotVal += getRand(-60, 60);
+            box.style.transform = "translate(" + box.xVal + "px, " + box.yVal + "px) rotate(" + box.rotVal + "deg)";
+            box.style.transition = "all " + getRandDec(1, 2) + "s cubic-bezier(0.75, 0, 0.25, 1)";
+        }
+
+        let getRand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min; // both included
+        let getRandDec = (min, max) => Math.random() * (max - min) + min; // both included
+
+        function changeLine(box) {
+            let active = "2px white solid";
+            let inactive = "2px transparent solid";
+            let rand = getRand(1, 5);
+            switch (rand) {
+                case 1:
+                    box.style.borderLeft = active;
+                    box.style.borderTop = inactive;
+                    box.style.borderRight = inactive;
+                    box.style.borderBottom = inactive;
+                    break;
+                case 2:
+                    box.style.borderLeft = inactive;
+                    box.style.borderTop = active;
+                    box.style.borderRight = inactive;
+                    box.style.borderBottom = inactive;
+                    break;
+                case 3:
+                    box.style.borderLeft = inactive;
+                    box.style.borderTop = inactive;
+                    box.style.borderRight = active;
+                    box.style.borderBottom = inactive;
+                    break;
+                case 4:
+                    box.style.borderLeft = inactive;
+                    box.style.borderTop = inactive;
+                    box.style.borderRight = inactive;
+                    box.style.borderBottom = active;
+                    break;
+                case 5: case 6:
+                    box.style.borderLeft = inactive;
+                    box.style.borderTop = inactive;
+                    box.style.borderRight = inactive;
+                    box.style.borderBottom = inactive;
+            }
+        }
+    </script>
+</head>
+
+<body bgcolor="#111" onload="populate(50)">
+</body>
+
+</html>

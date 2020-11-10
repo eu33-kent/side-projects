@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        #start {
+            width: 100px;
+            height: 50px;
+            font-size: larger;
+            background-color: #FB5;
+            border-radius: 10px;
+        }
+
+        #amt {
+            background-color: #FD7;
+            width: 100px;
+            height: 25px;
+            font-size: 20px;
+        }
+
+        .box {
+            width: 25px;
+            height: 25px;
+            background-color: white;
+            border: 0.5px black solid;
+            border-radius: 5px;
+            position: absolute;
+            box-sizing: border-box;
+            transition: all 25s linear;
+        }
+
+        #score {
+            position: absolute;
+            top: 10vh;
+        }
+
+        #timer {
+            position: absolute;
+            pointer-events: none;
+        }
+    </style>
+    <script>
+        let score = 0;
+        let winHandle = 0;
+        let timeHandle = 0;
+        let minutes = 0;
+        let seconds = 0;
+        let milliseconds = 0;
+        let startTime = 0;
+        let timer = document.createElement("h1");
+
+        function start(amt) {
+            document.body.removeChild(document.getElementById("start"));
+            document.body.removeChild(document.getElementById("amt"));
+            makeBoxes(amt);
+            startTime = new Date().getTime();
+            timeHandle = setInterval(getTime, 10);
+            timer.id = "timer";
+            document.body.appendChild(timer);
+        }
+
+        function makeBoxes(amt) {
+            let safeAmt = 100;
+            for (let i = 0; i < amt; i++) {
+                let box = document.createElement("div");
+                box.classList.add("box");
+                box.addEventListener("click", function () { givePoints(box, Math.floor(box.getBoundingClientRect().width * box.getBoundingClientRect().height), amt) });
+                document.body.appendChild(box);
+                //box.style.transform = "translate(" + getRand(0, window.innerWidth - box.getBoundingClientRect().width - safeAmt) + "px, " + getRand(0, window.innerHeight - box.getBoundingClientRect().height - safeAmt) + "px)";
+                box.style.backgroundColor = "rgb(" + getRand(0, 255) + ", " + getRand(0, 255) + ", " + getRand(0, 255) + ")";
+                box.style.left = getRand(0, window.innerWidth - (box.getBoundingClientRect().width + safeAmt)) + "px";
+                box.style.top = getRand(0, window.innerHeight - (box.getBoundingClientRect().height + safeAmt)) + "px";
+                box.style.transform = "scale(5)";
+                box.style.transition = (amt * 3) + "s linear";
+            }
+            winHandle = setInterval(checkWin, 50);
+        }
+
+        getRand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+        function givePoints(box, pointsInverted, boxCount) {
+            score += Math.floor((100000 / pointsInverted) / boxCount);
+            document.body.removeChild(box);
+        }
+
+        function checkWin() {
+            if (document.getElementsByClassName("box").length == 0) {
+                clearInterval(winHandle);
+                clearInterval(timeHandle);
+                let scoreText = document.createElement("h1");
+                scoreText.id = "score";
+                scoreText.innerText = "score: " + score;
+                document.body.appendChild(scoreText);
+            }
+        }
+
+        function getTime() {
+            let newTime = new Date().getTime();
+            let difference = newTime - startTime;
+            minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            milliseconds = Math.floor((difference % 1000) / 100);
+            let minutesString = minutes.toString().length < 2 ? "0" + minutes : minutes;
+            let secondsString = seconds.toString().length < 2 ? "0" + seconds : seconds;
+            timer.innerText = minutesString + ":" + secondsString + ":" + milliseconds;
+        }
+    </script>
+</head>
+
+<body bgcolor="#ED6">
+    <button id="start" onclick="start(amt.value)">start</button>
+    <input type="text" id="amt" />
+</body>
+
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Page Title</title>
+    <style>
+        #top {
+            width: 75vw;
+            --width: 75vw;
+            height: 75vh;
+            --height: 75vh;
+            border: 0.2vw solid white;
+            position: absolute;
+            top: calc(50vh - var(--height)/2);
+            left: calc(50vw - var(--width)/2);
+        }
+
+        div {
+            border: 0.1vh solid white;
+            border-style: solid solid solid solid;
+            width: 90%;
+            --width: 90%;
+            height: 90%;
+            --height: 90%;
+            box-sizing: border-box;
+            color: white;
+            position: relative;
+            top: calc((100% - var(--height)) / 2);
+            left: calc((100% - var(--width)) / 2);
+        }
+    </style>
+    <script>
+        const sheet = document.styleSheets[0];
+        const rules = sheet.cssRules || sheet.rules;
+        const divRules = rules[1];
+
+        function start() {
+            var top = document.getElementById("top");
+
+            top.innerHTML = "";
+
+            var newest = top.appendChild(document.createElement("div"));
+            while (parseInt(getComputedStyle(newest).width) > window.innerWidth * 0.01 && parseInt(getComputedStyle(newest).height) > window.innerHeight * 0.01) {
+                newest = newest.appendChild(document.createElement("div"));
+            }
+        }
+
+        function horizontalLeft() {
+            divRules.style.left = 0;
+        }
+        
+        function horizontalMiddle() {
+            divRules.style.left = "calc((100% - var(--width)) / 2)";
+        }
+        
+        function horizontalRight() {
+            divRules.style.left = "calc(100% - var(--width))";
+        }
+        
+        function verticalTop() {
+            divRules.style.top = 0;
+        }
+        
+        function verticalMiddle() {
+            divRules.style.top = "calc((100% - var(--height)) / 2)";
+        }
+        
+        function verticalBottom() {
+            divRules.style.top = "calc(100% - var(--height))";
+        }
+
+        function spacing(amount) {
+            divRules.style.setProperty("width", amount);
+            divRules.style.setProperty("--width", amount);
+            divRules.style.setProperty("height", amount);
+            divRules.style.setProperty("--height", amount);
+
+            start();
+        }
+    </script>
+</head>
+
+<body style="background-color: black" onload="start()">
+
+    <input type="button" value="left" onclick="horizontalLeft()" />
+    <input type="button" value="horizontal middle" onclick="horizontalMiddle()" />
+    <input type="button" value="right" onclick="horizontalRight()" />
+    <input type="button" value="top" onclick="verticalTop()" />
+    <input type="button" value="vertical middle" onclick="verticalMiddle()" />
+    <input type="button" value="bottom" onclick="verticalBottom()" />
+
+    <input type="text" placeholder="spacing" onchange="spacing(this.value)" />
+
+    <div id="top"></div>
+
+</body>
+
+</html>

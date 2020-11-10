@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        #container div {
+            width: 100%;
+            flex: 1 0 auto;
+            transition: all 1s;
+        }
+
+        #container div:hover {
+            flex: 2 0 auto;
+        }
+
+        #container {
+            width: 75vw;
+            height: 75vh;
+            display: flex;
+            flex-flow: column nowrap;
+            justify-items: center;
+            margin: calc(25vh / 2) calc(25vw / 2) 0;
+            align-items: center;
+            border: 10px solid transparent;
+            box-sizing: border-box;
+            position: absolute;
+            top: 5vh;
+        }
+
+        #input {
+            display: grid;
+            position: relative;
+            margin: 5vh auto auto auto;
+            align-items: center;
+            height: 10vh;
+            justify-content: center;
+            width: 25vw;
+            justify-items: center;
+            grid:
+                1fr 1fr / 1fr 1fr 1fr;
+        }
+
+        #input label {
+            font-size: 20px;
+            font-weight: 300;
+            grid-area: 1 / 1 / 2 / 3;
+        }
+
+        #num {
+            text-align: center;
+            font-size: 15px;
+            border-radius: 10%;
+            grid-area: 2 / 1 / 3 / 3;
+            background-color: #DDD;
+        }
+
+        #num:hover {
+            box-shadow: 1px 1px 3px 0px black;
+        }
+
+        #num:focus {
+            background-color: #FFF;
+        }
+
+        #input button {
+            grid-area: 1 / 3 / 2 / 4;
+        }
+
+        #input button:hover {
+            box-shadow: 1px 1px 3px 0px black;
+        }
+
+        #input * {
+            outline: none;
+            transition: 0.5s;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        html * {
+            font-family: "Montserrat", sans-serif;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+    <script>
+        function giveColour(startColor) {
+            var container = document.getElementById("container");
+            var input = document.getElementById("input");
+            startColor = [startColor[0], startColor[1], 20]; // stops random lightness
+            startColorGlobal = startColor;
+            var color = [...startColor];
+            var boxes = container.children;
+            if (boxes.length > 1) {
+                for (let i = 0; i < container.children.length; i++) {
+                    color[0] += 0;
+                    color[1] += 0;
+                    color[2] = lerp(startColor[2], 100 - startColor[2], (i / (boxes.length - 1)) * 100);
+                    boxes[i].style.backgroundColor = "hsl(" + color[0] + "," + color[1] + "%," + color[2] + "%)";
+                }
+            } else boxes[0].style.backgroundColor = "hsl(" + color[0] + "," + color[1] + "%," + color[2] + "%)";
+            container.style.borderImage = "linear-gradient(180deg, hsl(" + startColor[0] + "," + startColor[1] + "%," + startColor[2] + "%) 0%, hsl(" + color[0] + "," + color[1] + "%," + color[2] + "%) 100%) 1";
+            document.body.style.backgroundColor = "hsl(" + startColor[0] + "," + startColor[1] + "%," + 95 + "%)";
+            var style = document.styleSheets[0].cssRules;
+            style[5].style.backgroundColor = "hsl(" + startColor[0] + "," + startColor[1] + "%," + 90 + "%)";
+            style[8].style.backgroundColor = "hsl(" + startColor[0] + "," + startColor[1] + "%," + 90 + "%)";
+        }
+
+        function createBoxes(num, startColor) {
+            var container = document.getElementById("container");
+            container.innerHTML = "";
+            for (let i = 0; i < num; i++) {
+                container.appendChild(document.createElement("div"));
+            }
+            giveColour(startColor);
+        }
+
+        function randomColor() {
+            hue = getRandInt(0, 360);
+            saturation = getRandInt(0, 100);
+            lightness = getRandInt(0, 100);
+            giveColour([hue, saturation, lightness]);
+        }
+
+        const getRandInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min; // both included
+        const lerp = (min, max, percentage) => min * (1 - (percentage / 100)) + max * (percentage / 100);
+    </script>
+</head>
+
+<body onload="createBoxes(4, [210,80,20])">
+    <div id="input">
+        <label for="num">How many boxes?</label>
+        <input type="number" id="num" onkeydown="return false" oninput="createBoxes(this.value, startColorGlobal)" min="1" max="20" value="4" />
+        <button onclick="randomColor()">Random Color</button>
+    </div>
+    <div id="container"></div>
+</body>
+
+</html>

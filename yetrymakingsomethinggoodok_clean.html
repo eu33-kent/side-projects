@@ -1,0 +1,209 @@
+<!doctype html>
+<html>
+
+<head>
+    <style>
+        @keyframes sureidk {
+            0% {
+                opacity: 0;
+                top: 50vh;
+            }
+
+            100% {
+                top: var(--titleTop);
+            }
+        }
+
+        @keyframes long {
+            0% {
+                transform: translateY(20vh);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0;
+            }
+
+            100% {
+                transform: initial;
+            }
+        }
+
+        @keyframes small {
+            0% {
+                transform: translateY(20vh);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0;
+            }
+
+            100% {
+                transform: initial;
+            }
+        }
+
+        #title {
+            color: #EEE;
+            font-size: 10vh;
+            position: absolute;
+            --titleTop: 40vh;
+            top: 40vh;
+            left: 0;
+            animation: sureidk 2s;
+            text-shadow: 0 0 0.2vw #eee;
+            width: 99vw;
+            text-align: center;
+        }
+
+        div {
+            width: 10vw;
+            height: 10vh;
+            border: 1px solid #eee;
+            box-shadow: 0 0 5px #eee;
+            position: absolute;
+            box-sizing: border-box;
+            color: #eee;
+            text-align: center;
+            font-size: 2vw;
+            line-height: 20vh;
+            border-radius: 0.5vw;
+        }
+
+        .long {
+            width: 60vw;
+            height: 30vh;
+            left: 20vw;
+        }
+
+        .long.animStart {
+            animation: long 2s;
+        }
+
+        .long.start {
+            animation: long 1s;
+        }
+
+        .small {
+            width: 20vw;
+            height: 20vh;
+        }
+
+        .small.animStart {
+            animation: small 3s
+        }
+
+        .small.start {
+            animation: small 1s;
+        }
+
+        #footer {
+            border: none;
+            box-shadow: none;
+            line-height: 10vh;
+            left: 10vw;
+            top: 240vh;
+            width: 80vw;
+            /*border: 1px solid white;*/
+        }
+
+        #footer a {
+            text-decoration: none;
+            font-size: 1vw;
+            color: #eee;
+            padding: 0 2vw 0 2vw;
+        }
+
+        @keyframes smooth {
+			0% {
+				
+			}
+			50% {
+				box-shadow: 0 0 20px #fff;
+			}
+            100% {
+				
+			}
+        }
+    </style>
+    <script>
+        function inView(elem) {
+            var viewTop = document.documentElement.scrollTop;
+            var viewBottom = viewTop + window.innerHeight;
+            var elemTop = elem.offsetTop;
+            var elemBottom = elemTop + elem.offsetHeight;
+            return elemTop <= viewBottom && elemBottom >= viewTop;
+        }
+
+        function checkAnimation() {
+            for (let thing of document.getElementsByTagName("div")) {
+                if (!thing.classList.contains("animStart")) {
+                    if (inView(thing)) thing.classList.add("start");
+                }
+            }
+        }
+
+        window.addEventListener("scroll", checkAnimation);
+
+        function populate() {
+            for (let thing of document.getElementsByTagName("div")) {
+                if (thing.innerText == "content") {
+                    thing.innerHTML = '<p>content</p>';
+					makeEpic(thing);
+                }
+            }
+            //infinite();
+            document.body.removeChild(document.getElementById("footer"));
+        }
+
+        function makeEpic(elem) {
+            elem.addEventListener("mouseover", function () { this.style.animation = "smooth 1s ease-in-out" });
+            elem.addEventListener("animationend", function () { this.style.animation = "0" });
+        }
+
+        let nextHeight = 240;
+
+        function infinite() {
+            if (atBottom()) {
+                let div = document.createElement("div");
+                let p = document.createElement("p");
+                p.innerHTML = "content";
+                div.appendChild(p);
+                div.classList.add("long");
+                div.style.top = nextHeight + "vh";
+                document.body.appendChild(div);
+                nextHeight += 40;
+                makeEpic(div);
+            }
+        }
+
+        window.addEventListener("scroll", infinite);
+
+        function atBottom() {
+            var viewBottom = document.documentElement.scrollTop + window.innerHeight;
+            var windowBottom = document.documentElement.scrollHeight;
+            return viewBottom + 10 >= windowBottom;
+        }
+    </script>
+</head>
+
+<body bgcolor="#111" onload=populate()>
+    <div class="long animStart" style="top: 5vh">content</div>
+    <span id="title">Smooth</span>
+    <div class="small animStart" style="left: 10vw; top: 60vh">content</div>
+    <div class="small animStart" style="left: 40vw; top: 60vh">content</div>
+    <div class="small animStart" style="left: 70vw; top: 60vh">content</div>
+    <div class="long animStart" style="top: 90vh">content</div>
+    <div class="long" style="top: 130vh">content</div>
+    <div class="small" style="left: 25vw; top: 170vh">content</div>
+    <div class="small" style="left: 55vw; top: 170vh">content</div>
+    <div class="long" style="top: 200vh">content</div>
+    <div id="footer">
+        <a href="">About</a>
+        <a href="">Contact</a>
+        <a href="">Legal</a>
+    </div>
+</body>
+
+</html>
