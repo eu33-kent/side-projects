@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>clean cubes</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            position: absolute;
+            height: 100%;
+            box-shadow: 0 0 100px 100px #000 inset;
+            background-color: #000;
+        }
+
+        #container {
+            position: fixed;
+            z-index: -1;
+        }
+
+        * {
+            color: hsl(0, 0%, 90%);
+            font-family: "Raleway", sans-serif;
+            text-align: center;
+            user-select: none;
+        }
+
+        #title {
+            font-size: 100px;
+            width: 100vw;
+            margin-top: 25vh;
+            text-shadow: 0px 0px 10px #fff;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script src="https://unpkg.com/three/build/three.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="module">
+        const rndInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+        const rnd = (min, max) => Math.random() * (max - min) + min;
+
+        import { EffectComposer } from "https://unpkg.com/three/examples/jsm/postprocessing/EffectComposer.js";
+        import { RenderPass } from "https://unpkg.com/three/examples/jsm/postprocessing/RenderPass.js";
+        import { SSAARenderPass } from "https://unpkg.com/three/examples/jsm/postprocessing/SSAARenderPass.js";
+        import { ShaderPass } from "https://unpkg.com/three/examples/jsm/postprocessing/ShaderPass.js";
+        import { SobelOperatorShader } from "https://unpkg.com/three/examples/jsm/shaders/SobelOperatorShader.js";
+        import { OutlinePass } from "https://unpkg.com/three/examples/jsm/postprocessing/OutlinePass.js";
+        import { UnrealBloomPass } from "https://unpkg.com/three/examples/jsm/postprocessing/UnrealBloomPass.js";
+
+        var WIDTH = window.innerWidth, HEIGHT = window.innerHeight;
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(WIDTH, HEIGHT);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        const camera = new THREE.PerspectiveCamera(
+            45, // fov
+            WIDTH / HEIGHT, // aspect
+            0.1, // near
+            1000 // far
+        );
+        const scene = new THREE.Scene();
+
+        const boxMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+        const boxGeometry = new THREE.BoxGeometry(
+            5, // width
+            5, // height
+            5 // depth
+        );
+        var boxes = [];
+
+        const group = new THREE.Group();
+
+        //boxMaterial.wireframe = true;
+
+        for (var i = 0; i < 500; i++) {
+            var box = new THREE.Mesh(boxGeometry, boxMaterial);
+            box.position.set(rnd(-250, 250), rnd(-250, 250), rnd(-500, -100));
+            boxes.push(box);
+            group.add(box);
+
+            box.rateRot = rnd(-0.01, 0.01);
+        }
+
+        const composer = new EffectComposer(renderer);
+        const renderPass = new RenderPass(scene, camera);
+        composer.addPass(renderPass);
+
+        const ssaaPass = new SSAARenderPass(scene, camera);
+        ssaaPass.sampleLevel = 2;
+        composer.addPass(ssaaPass);
+
+        const edgeDetectPass = new ShaderPass(SobelOperatorShader);
+        edgeDetectPass.uniforms["resolution"].value.x = WIDTH;
+        edgeDetectPass.uniforms["resolution"].value.y = HEIGHT;
+        //composer.addPass(edgeDetectPass);
+
+        const outlinePass = new OutlinePass(new THREE.Vector2(WIDTH, HEIGHT), scene, camera);
+        outlinePass.selectedObjects = boxes;
+        outlinePass.edgeStrength = 2;
+        outlinePass.edgeGlow = 1;
+        outlinePass.edgeThickness = 2;
+        outlinePass.pulsePeriod = 20;
+        //composer.addPass(outlinePass);
+
+        const outlinePass2 = new OutlinePass(new THREE.Vector2(WIDTH, HEIGHT), scene, camera);
+        outlinePass2.selectedObjects = boxes;
+        outlinePass2.edgeStrength = 1;
+        outlinePass2.edgeGlow = 5;
+        outlinePass2.edgeThickness = 8;
+        outlinePass2.pulsePeriod = 20;
+        composer.addPass(outlinePass2);
+
+        const bloomPass = new UnrealBloomPass(new THREE.Vector2(WIDTH, HEIGHT));
+        bloomPass.strength = 0.5;
+        bloomPass.radius = 1;
+        composer.addPass(bloomPass);
+
+        $("document").ready(() => {
+            const container = $("#container");
+            container.append(renderer.domElement);
+
+            scene.add(camera);
+            scene.add(group);
+
+            requestAnimationFrame(update);
+        });
+
+        function update() {
+            composer.render();
+            requestAnimationFrame(update);
+
+            group.rotation.x = Math.sin(Date.now() * 0.0001) * 0.2;
+            group.rotation.y = Math.sin(Date.now() * 0.0001) * 0.1;
+            group.rotation.z = Math.sin(Date.now() * 0.0001) * 0.1;
+
+            group.position.x = Math.sin(Date.now() * 0.0001) * 50;
+            group.position.y = Math.sin(Date.now() * 0.0001) * 10;
+            group.position.z = Math.sin(Date.now() * 0.0001) * 75;
+
+            for (var box of boxes) {
+                box.rotation.x += box.rateRot;
+                box.rotation.y += box.rateRot;
+                box.rotation.z += box.rateRot;
+            }
+        }
+
+        window.onresize = () => {
+            WIDTH = window.innerWidth;
+            HEIGHT = window.innerHeight;
+            renderer.setSize(WIDTH, HEIGHT);
+            camera.aspect = WIDTH / HEIGHT;
+            camera.updateProjectionMatrix();
+            composer.setSize(WIDTH, HEIGHT);
+        };
+
+        var interval, intervalStop;
+
+        window.onmousedown = () => {
+            group.hue = 0;
+            group.saturation = 0;
+            group.lightness = 100;
+            interval = setInterval(() => {
+                outlinePass2.visibleEdgeColor = new THREE.Color("hsl(" +
+                    (() => group.hue += 1.5)() + ", " +
+                    (() => { if (group.saturation < 100) group.saturation += 1; return group.saturation })() + "%, " +
+                    (() => { if (group.lightness > 80) group.lightness -= 1; return group.lightness })() + "%)");
+            }, 20);
+        };
+
+        window.onmouseup = () => {
+            clearInterval(interval);
+            intervalStop = setInterval(() => {
+                outlinePass2.visibleEdgeColor = new THREE.Color("hsl(" +
+                    group.hue + ", " +
+                    (() => { if (group.saturation > 0) group.saturation -= 1; return group.saturation })() + "%, " +
+                    (() => { if (group.lightness < 100) group.lightness += 1; return group.lightness })() + "%)");
+                if (group.saturation <= 0 && group.lightness >= 100) clearInterval(intervalStop);
+            }, 20);
+        };
+    </script>
+</head>
+
+<body>
+    <div id="container"></div>
+    <div id="title">C U B E S</div>
+    <div>just some cubes, idk.</div>
+    <div>(try holding down a click)</div>
+</body>
+
+</html>
