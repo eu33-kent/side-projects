@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300&display=swap');
+
+        * {
+            outline: none;
+            font-family: "Source Sans Pro", sans-serif;
+            user-select: none;
+        }
+
+        button {
+            width: 100px;
+            height: 50px;
+            border: none;
+            background-color: #a4161a;
+            color: #f5f3f4;
+            border-radius: 5px;
+            transition: 0.1s;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        button:active {
+            background-color: #ba181b;
+        }
+
+        input[type=range] {
+            width: 200px;
+            height: 10px;
+            appearance: none;
+            background: #f5f3f4;
+            margin: 10px;
+            border-radius: 10px;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none;
+            background-color: #a4161a;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            border-radius: 100%;
+
+        }
+
+        h1,
+        h2 {
+            color: #f5f3f4;
+            margin: 10px;
+            display: inline;
+        }
+
+        #opener {
+            width: 80vw;
+            height: 200px;
+            border: 1px solid #fff;
+            border-radius: 3px;
+            margin: auto;
+            position: absolute;
+            overflow: hidden;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 300px;
+            background-color: #111;
+        }
+
+        #scroller {
+            width: 10000vw;
+            height: 80%;
+            /*border-top: 1px solid #fff;
+            border-bottom: 1px solid #fff;*/
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        #selector {
+            width: 5px;
+            height: 100%;
+            margin: auto;
+            background-color: hsla(0, 100%, 100%, 90%);
+            box-shadow: 0 0 10px 1px hsla(0, 100%, 100%, 90%);
+            position: absolute;
+            top: 0%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .item {
+            width: 200px;
+            height: 100%;
+            position: relative;
+            border: 1px solid #fff;
+            background-color: hsl(225, 50%, 50%);
+            box-shadow: inset 0 0 100px #000;
+            float: left;
+            border-radius: 10px;
+            margin-right: 10px;
+            left: -40px;
+            font-size: 32px;
+            text-align: center;
+            line-height: 100px;
+        }
+
+        .Legendary {
+            background-color: hsl(45, 100%, 50%);
+            font-size: 40px;
+            font-weight: bolder;
+        }
+
+        .Magnificent {
+            background-color: hsl(25, 100%, 50%);
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .Epic {
+            background-color: hsl(280, 100%, 50%);
+            font-size: 42px;
+            font-weight: bold;
+        }
+
+        .Rare {
+            background-color: hsl(120, 100%, 50%);
+            font-size: 42px;
+        }
+
+        .Uncommon {
+            background-color: hsl(180, 100%, 50%);
+        }
+    </style>
+    <script>
+        function setup() {
+            for (var elem of document.body.children) {
+                elem.setAttribute("tabindex", "-1");
+                elem.setAttribute("onkeyup", "event.preventDefault()");
+            }
+            document.body.addEventListener("keypress", function (e) { logKey(e.key) });
+            document.getElementById("chanceLow").addEventListener("input", function (e) { chance = this.value; document.getElementById("chanceLabel").innerText = "chance: " + chance });
+            document.getElementById("chanceHigh").addEventListener("input", function (e) { chance = this.value; document.getElementById("chanceLabel").innerText = "chance: " + chance });
+
+            for (var i = 0; i < 10; i++) {
+                addItem(10);
+            }
+        }
+
+        const getRand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+        const getRandDec = (min, max) => Math.random() * (max - min) + min;
+        var keyLog = "";
+        var chance = 1;
+        const lerp = (min, max, percentage) => min * (1 - (percentage / 100)) + max * (percentage / 100);
+
+        var low = 1000000, high = 9999999;
+
+        var intervalItem = 0, intervalScroll = 0, timeStart = 0, scrollAmt = 0;
+
+        function gamble() {
+            clearInterval(intervalItem);
+            clearInterval(intervalScroll);
+            scrollAmt = getRand(2000, 2500);
+
+            var scroller = document.querySelector("#scroller");
+            for (var item of document.querySelectorAll(".item")) {
+                scroller.removeChild(item);
+            }
+            scroller.style.left = "0px";
+            intervalItem = setInterval(() => { addItem(150) }, 1);
+            timeStart = Date.now();
+            intervalScroll = setInterval(scroll, 10);
+        }
+
+        function addItem(amt) {
+            if (document.querySelectorAll(".item").length >= amt) {
+                clearInterval(intervalItem);
+            } else {
+                var scroller = document.querySelector("#scroller");
+                var item = document.createElement("div");
+                item.classList.add("item");
+                var rarity = getRarity(getRarityVal())
+                item.classList.add(rarity);
+                item.innerText = rarity;
+                scroller.appendChild(item);
+            }
+        }
+
+        function scroll() {
+            if ((Date.now() - timeStart) / 1000 > 15) {
+                clearInterval(intervalScroll);
+            } else {
+                var scroller = document.querySelector("#scroller");
+                var left = getComputedStyle(scroller).left;
+                var leftVal = +left.substring(0, left.length - 2);
+                if (scrollAmt / 50 < 0.2) scrollAmt = 0;
+                leftVal -= (scrollAmt -= 2) / 50;
+                scroller.style.left = leftVal + "px";
+            }
+        }
+
+        function getRarity(rarityVal) {
+            if (rarityVal <= lerp(low, high, 0.01 * chance)) return "Legendary";
+            else if (rarityVal <= lerp(low, high, 0.1 * chance)) return "Magnificent";
+            else if (rarityVal <= lerp(low, high, 1 * chance)) return "Epic";
+            else if (rarityVal <= lerp(low, high, 10 * chance)) return "Rare";
+            else if (rarityVal <= lerp(low, high, 25 * chance)) return "Uncommon";
+            else return "Common";
+        }
+
+        function getRarityVal() {
+            return getRand(low, high);
+        }
+
+        function logKey(key) {
+            keyLog += key;
+            if (keyLog.length > 10) keyLog = keyLog.substring(1);
+
+            if (keyLog.includes("giveplz/")) chance = 10;
+        }
+
+        window.addEventListener("keypress", (e) => {if (e.key == " ") gamble();});
+    </script>
+</head>
+
+<body bgcolor="#222" onload="setup()">
+    <button onclick="gamble()">Gamble</button>
+    <input type="range" id="chanceLow" min="0.1" max="10" step="0.1" value="1" />
+    <input type="range" id="chanceHigh" min="10" max="1000" step="10" value="1" />
+    <h2 id="chanceLabel" style="color:#f5f3f4">Chance: 1</h2>
+    <br />
+    <br />
+    <div id="opener">
+        <div id="scroller"></div>
+        <div id="selector"></div>
+    </div>
+</body>
+
+</html>
