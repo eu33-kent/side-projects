@@ -9,3 +9,4 @@ a collection of random small projects:
 - [smooth design with css flex](https://eu33-kent.github.io/random-things/nice%20rectangles)
 - [recursive rectangles](https://eu33-kent.github.io/random-things/recursive%20boxes)
 - [moving lines design](https://eu33-kent.github.io/random-things/satisfying%20lines)
+- [loot box simulator](https://eu33-kent.github.io/random-things/GAMBLING%20GUI)
