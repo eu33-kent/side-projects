@@ -10,3 +10,4 @@ a collection of random small projects:
 - [recursive rectangles](https://eu33-kent.github.io/random-things/recursive%20boxes)
 - [moving lines design](https://eu33-kent.github.io/random-things/satisfying%20lines)
 - [loot box simulator](https://eu33-kent.github.io/random-things/GAMBLING%20GUI)
+- [moving 3d objects with cursor](https://eu33-kent.github.io/random-things/smash3d)
