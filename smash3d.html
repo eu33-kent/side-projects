@@ -170,10 +170,12 @@
         var sizeMin = 2;
         var sizeMax = 5;
         var shape = +findGetParameter("shape") || 0;
+        var friction = +findGetParameter("friction") || 1.1;
 
         window.shape = shape;
         window.bounce = bounce;
         window.count = count;
+        window.friction = friction;
 
         $("document").ready(() => {
             window.cancelAnimationFrame(animID);
@@ -244,8 +246,8 @@
                 box.rotation.z += box.rateRot;*/
                 box.position.x += box.velX;
                 box.position.y += box.velY;
-                box.velX /= 1.1;
-                box.velY /= 1.1;
+                box.velX /= friction;
+                box.velY /= friction;
                 if (!!+bounce) {
                     var hitbox = new THREE.Box3().setFromObject(box);
                     for (var box2 of boxes) {
@@ -285,7 +287,7 @@
 
             posOld.copy(posNew);
             posNew.copy(sphere.position);
-            var dir = new THREE.Vector3().subVectors(posNew, posOld).normalize();
+            var dir = new THREE.Vector3().subVectors(posNew, posOld);
             /*var rayCast = new THREE.Raycaster(sphere.position, dir);
             var intersected = rayCast.intersectObjects(boxes, intersected);
             //var line = new THREE.ArrowHelper(rayCast.ray.direction, rayCast.ray.origin, 100, 0xff0000);
@@ -301,10 +303,11 @@
             var hitbox = new THREE.Sphere(sphere.position, sphere.geometry.parameters.radius);
             for (var box of boxes) {
                 if (hitbox.intersectsBox(new THREE.Box3().setFromObject(box))) {
-                    box.velX += dir.x / 4;
-                    box.velY += dir.y / 4;
+                    box.velX += (dir.x / 7) + (new THREE.Vector3().subVectors(box.position, hitbox.center).x / 15);
+                    box.velY += (dir.y / 7) + (new THREE.Vector3().subVectors(box.position, hitbox.center).y / 15);
                 }
             }
+            //console.log(dir);
         };
 
         function findGetParameter(parameterName) {
@@ -323,14 +326,18 @@
     <div id="container"></div>
     <div id="title">smash3d</div>
     <div id="controls">
-        <button onclick="document.location.search = 'shape=0&bounce=' + window.bounce + '&count=' + window.count">cubes</button>
-        <button onclick="document.location.search = 'shape=1&bounce=' + window.bounce + '&count=' + window.count">spheres</button>
-        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=1&count=' + window.count">collision</button>
-        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=0&count=' + window.count">no collision</button>
-        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=50'">50</button>
-        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=100'">100</button>
-        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=250'">250</button>
-        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=500'">500</button>
+        <button onclick="document.location.search = 'shape=0&bounce=' + window.bounce + '&count=' + window.count + '&friction=' + window.friction">cubes</button>
+        <button onclick="document.location.search = 'shape=1&bounce=' + window.bounce + '&count=' + window.count + '&friction=' + window.friction">spheres</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=1&count=' + window.count + '&friction=' + window.friction">collision</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=0&count=' + window.count + '&friction=' + window.friction">no collision</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=50&friction=' + window.friction">50</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=100&friction=' + window.friction">100</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=250&friction=' + window.friction">250</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=500&friction=' + window.friction">500</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=' + window.count + '&friction=1.1'">friction = 1.1</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=' + window.count + '&friction=1.01'">friction = 1.01</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=' + window.count + '&friction=1.5'">friction = 1.5</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=' + window.count + '&friction=1.001'">friction = 1.001</button>
     </div>
 </body>
 </html>
