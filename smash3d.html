@@ -26,6 +26,7 @@
         * {
             color: hsl(0, 0%, 90%);
             font-family: "Raleway", sans-serif;
+            font-size: 15px;
             text-align: center;
             user-select: none;
         }
@@ -167,8 +168,8 @@
 
         var bounce = +findGetParameter("bounce") || 0;
         var count = +findGetParameter("count") || 250;
-        var sizeMin = 2;
-        var sizeMax = 5;
+        var sizeMin = +findGetParameter("sizeMin") || 2;
+        var sizeMax = +findGetParameter("sizeMax") || 5;
         var shape = +findGetParameter("shape") || 0;
         var friction = +findGetParameter("friction") || 1.1;
 
@@ -176,6 +177,8 @@
         window.bounce = bounce;
         window.count = count;
         window.friction = friction;
+        window.sizeMin = sizeMin;
+        window.sizeMax = sizeMax;
 
         $("document").ready(() => {
             window.cancelAnimationFrame(animID);
@@ -326,18 +329,23 @@
     <div id="container"></div>
     <div id="title">smash3d</div>
     <div id="controls">
-        <button onclick="document.location.search = 'shape=0&bounce=' + window.bounce + '&count=' + window.count + '&friction=' + window.friction">cubes</button>
-        <button onclick="document.location.search = 'shape=1&bounce=' + window.bounce + '&count=' + window.count + '&friction=' + window.friction">spheres</button>
-        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=1&count=' + window.count + '&friction=' + window.friction">collision</button>
-        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=0&count=' + window.count + '&friction=' + window.friction">no collision</button>
-        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=50&friction=' + window.friction">50</button>
-        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=100&friction=' + window.friction">100</button>
-        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=250&friction=' + window.friction">250</button>
-        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=500&friction=' + window.friction">500</button>
-        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=' + window.count + '&friction=1.1'">friction = 1.1</button>
-        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=' + window.count + '&friction=1.01'">friction = 1.01</button>
-        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=' + window.count + '&friction=1.5'">friction = 1.5</button>
-        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=' + window.count + '&friction=1.001'">friction = 1.001</button>
+        <button onclick="document.location.search=''">reset</button>
+        <button onclick="document.location.search = 'shape=0&bounce=' + window.bounce + '&count=' + window.count + '&friction=' + window.friction + '&sizeMin=' + window.sizeMin + '&sizeMax=' + window.sizeMax">cubes</button>
+        <button onclick="document.location.search = 'shape=1&bounce=' + window.bounce + '&count=' + window.count + '&friction=' + window.friction + '&sizeMin=' + window.sizeMin + '&sizeMax=' + window.sizeMax">spheres</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=1&count=' + window.count + '&friction=' + window.friction + '&sizeMin=' + window.sizeMin + '&sizeMax=' + window.sizeMax">collision</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=0&count=' + window.count + '&friction=' + window.friction + '&sizeMin=' + window.sizeMin + '&sizeMax=' + window.sizeMax">no collision</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=50&friction=' + window.friction + '&sizeMin=' + window.sizeMin + '&sizeMax=' + window.sizeMax">count = 50</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=100&friction=' + window.friction + '&sizeMin=' + window.sizeMin + '&sizeMax=' + window.sizeMax">count = 100</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=250&friction=' + window.friction + '&sizeMin=' + window.sizeMin + '&sizeMax=' + window.sizeMax">count = 250</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=500&friction=' + window.friction + '&sizeMin=' + window.sizeMin + '&sizeMax=' + window.sizeMax">count = 500</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=' + window.count + '&friction=1.1&sizeMin=' + window.sizeMin + '&sizeMax=' + window.sizeMax">friction = 1.1</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=' + window.count + '&friction=1.01&sizeMin=' + window.sizeMin + '&sizeMax=' + window.sizeMax">friction = 1.01</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=' + window.count + '&friction=1.5&sizeMin=' + window.sizeMin + '&sizeMax=' + window.sizeMax">friction = 1.5</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=' + window.count + '&friction=1.001&sizeMin=' + window.sizeMin + '&sizeMax=' + window.sizeMax">friction = 1.001</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=' + window.count + '&friction=' + window.friction + '&sizeMin=2&sizeMax=5'">sizes = 2-5</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=' + window.count + '&friction=' + window.friction + '&sizeMin=1&sizeMax=1'">sizes = 1-1</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=' + window.count + '&friction=' + window.friction + '&sizeMin=5&sizeMax=5'">sizes = 5-5</button>
+        <button onclick="document.location.search = 'shape=' + window.shape + '&bounce=' + window.bounce + '&count=' + window.count + '&friction=' + window.friction + '&sizeMin=3&sizeMax=20'">sizes = 3-20</button>
     </div>
 </body>
 </html>
