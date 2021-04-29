@@ -36,19 +36,20 @@
             margin-bottom: 10px;
         }
     </style>
-    <script src="https://unpkg.com/three/build/three.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script type="module">
         const rndInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
         const rnd = (min, max) => Math.random() * (max - min) + min;
 
-        import { EffectComposer } from "https://unpkg.com/three/examples/jsm/postprocessing/EffectComposer.js";
-        import { RenderPass } from "https://unpkg.com/three/examples/jsm/postprocessing/RenderPass.js";
-        import { SSAARenderPass } from "https://unpkg.com/three/examples/jsm/postprocessing/SSAARenderPass.js";
-        import { ShaderPass } from "https://unpkg.com/three/examples/jsm/postprocessing/ShaderPass.js";
-        import { SobelOperatorShader } from "https://unpkg.com/three/examples/jsm/shaders/SobelOperatorShader.js";
-        import { OutlinePass } from "https://unpkg.com/three/examples/jsm/postprocessing/OutlinePass.js";
-        import { UnrealBloomPass } from "https://unpkg.com/three/examples/jsm/postprocessing/UnrealBloomPass.js";
+        import * as THREE from "https://cdn.skypack.dev/three";
+
+        import { EffectComposer } from "https://cdn.skypack.dev/three/examples/jsm/postprocessing/EffectComposer.js";
+        import { RenderPass } from "https://cdn.skypack.dev/three/examples/jsm/postprocessing/RenderPass.js";
+        import { SSAARenderPass } from "https://cdn.skypack.dev/three/examples/jsm/postprocessing/SSAARenderPass.js";
+        import { ShaderPass } from "https://cdn.skypack.dev/three/examples/jsm/postprocessing/ShaderPass.js";
+        import { SobelOperatorShader } from "https://cdn.skypack.dev/three/examples/jsm/shaders/SobelOperatorShader.js";
+        import { OutlinePass } from "https://cdn.skypack.dev/three/examples/jsm/postprocessing/OutlinePass.js";
+        import { UnrealBloomPass } from "https://cdn.skypack.dev/three/examples/jsm/postprocessing/UnrealBloomPass.js";
 
         var WIDTH = window.innerWidth, HEIGHT = window.innerHeight;
         const renderer = new THREE.WebGLRenderer();
@@ -68,6 +69,8 @@
             5, // height
             5 // depth
         );
+
+
         var boxes = [];
 
         const group = new THREE.Group();
