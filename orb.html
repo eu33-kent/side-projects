@@ -96,12 +96,17 @@
             wall3 = new THREE.Mesh(wallGeometry, wallMaterial),
             wall4 = new THREE.Mesh(wallGeometry, wallMaterial);
 
-        wall1.position.set(-220, 0, -200);
-        wall2.position.set(0, -110, -200);
+        //wall1.position.set(-220, 0, -200);
+        //wall2.position.set(0, -110, -200);
         wall2.rotation.set(0, 0, Math.PI / 2);
-        wall3.position.set(0, 110, -200);
+        //wall3.position.set(0, 110, -200);
         wall3.rotation.set(0, 0, Math.PI / 2);
-        wall4.position.set(220, 0, -200);
+        //wall4.position.set(220, 0, -200);
+
+        wall1.position.set(-(WIDTH / 9), 0, -200);
+        wall2.position.set(0, -(HEIGHT / 9), -200);
+        wall3.position.set(0, HEIGHT / 9, -200);
+        wall4.position.set(WIDTH / 9, 0, -200);
 
         walls.push(wall1);
         walls.push(wall2);
