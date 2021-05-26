@@ -85,7 +85,9 @@
 
         var walls = [];
 
-        const wallGeometry = new THREE.BoxGeometry(25, 1000, 100);
+        var wallWidth = 25, wallHeight = 1000, wallDepth = 100;
+
+        const wallGeometry = new THREE.BoxGeometry(wallWidth, wallHeight, wallDepth);
         const wallMaterial = new THREE.MeshBasicMaterial({ color: 0x111111 });
 
         const
@@ -224,6 +226,12 @@
             camera.aspect = WIDTH / HEIGHT;
             camera.updateProjectionMatrix();
             composer.setSize(WIDTH, HEIGHT);
+            //camera.fov = 2 * Math.atan((WIDTH / camera.aspect) / (2 * 1000)) * (180 / Math.PI);
+            wall1.position.set(-(WIDTH / 9), 0, -200);
+            wall2.position.set(0, -(HEIGHT / 9), -200);
+            wall3.position.set(0, HEIGHT / 9, -200);
+            wall4.position.set(WIDTH / 9, 0, -200);
+            ball.position.set(0, 0, -250);
         };
 
         var interval = 0;
@@ -249,8 +257,8 @@
         window.ontouchmove = () => { mouseX = event.touches[0].clientX; mouseY = event.touches[0].clientY };
 
         //window.addEventListener("mousedown", (event) => interval = setInterval(() => grab(event), 1));
-        window.onmousedown = () => interval = setInterval(grab, 1);
-        window.ontouchstart = () => interval = setInterval(grab, 1);
+        window.onmousedown = () => interval = setInterval(grab, 0);
+        window.ontouchstart = () => interval = setInterval(grab, 0);
 
         window.onmouseup = release;
         window.ontouchend = release;
