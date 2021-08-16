@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>glowgrid</title>
+    <style>
+        body, html {
+            margin: 0;
+            background-color: #000;
+            overflow: hidden;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        #grid {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .box {
+            --color: #aaa;
+            background-color: var(--color);
+            border: 1px solid #000;
+            transition: .2s;
+            border-radius: 10px;
+            transform: var(--transform);
+            z-index: var(--z);
+        }
+
+        .box:hover, .box:active {
+            background-color: #fff;
+            box-shadow: 0 0 100px #fff;
+            z-index: 2;
+            transform: scale(1.1);
+        }
+
+        @media (orientation: portrait) {
+            .box {
+                transition: background-color .2s;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="grid"></div>
+    <script>
+        const getRandInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+        const getRand = (min, max) => Math.random() * (max - min) + min;
+        const lerp = (min, max, percentage) => min * (1 - (percentage / 100)) + max * (percentage / 100);
+
+        var width = document.body.clientWidth;
+        var height = document.body.clientHeight;
+        
+        var scaleX = .05;
+        var scaleY = .1;
+
+        var count = 100 * (.1/scaleX) * (.1/scaleY);
+        
+        if (window.matchMedia("(orientation: portrait)").matches) {
+            scaleX = .2;
+            scaleY = .1;
+        }
+
+        var sizeX = width * scaleX;
+        var sizeY = height * scaleY;
+
+        var color1 = "#555";
+        var color2 = "#333";
+        var color3 = "#444";
+
+        for (var i = 0; i < count; i++) {
+            var box = document.createElement("div");
+            box.classList.add("box");
+            box.style.minWidth = sizeX + "px";
+            box.style.minHeight = sizeY + "px";
+            box.onclick = (e) => {
+                var rand = getRandInt(5, 9);
+                color1 = "#" + rand + rand + rand;
+                color2 = "#" + (rand-4) + (rand-4) + (rand-4);
+                color3 = "#" + (rand-2) + (rand-2) + (rand-2);
+                clear();
+                clicked(e.target);
+            }
+            document.querySelector("#grid").appendChild(box);
+        }
+
+        var clickedSet = new Set();
+
+        const rate = 100;
+
+        var timeouts = [];
+
+        function clicked(box) {
+            var rect1 = box.getBoundingClientRect();
+            clickedSet.add(box);
+            reset(box);
+
+            for (var box2 of document.querySelector("#grid").children) {
+                var rect2 = box2.getBoundingClientRect();
+
+                if (!(rect1.right < rect2.left || 
+                    rect1.left > rect2.right || 
+                    rect1.bottom < rect2.top || 
+                    rect1.top > rect2.bottom)) {
+                    if (box != box2 && !clickedSet.has(box2)) {
+                        box2.style.setProperty("--color", color2);
+                        box2.style.setProperty("--transform", "scale(1.2)");
+                        box2.style.setProperty("--z", "1");
+                        timeouts.push(setTimeout(clicked, rate, box2));
+                    }
+                    clickedSet.add(box2);
+                }
+            }
+
+            //if (clickedSet.size == count) setTimeout(() => clickedSet.clear(), rate);
+        }
+
+        function reset(box) {
+            box.style.setProperty("--color", color3);
+            box.style.setProperty("--transform", "scale(1)");
+            box.style.setProperty("--z", "0");
+            //timeouts.push(setTimeout(makeClickable, rate+20, box));
+        }
+
+        function makeClickable(box) {
+            clickedSet.delete(box);
+        }
+
+        function clear() {
+            for (var timeout of timeouts) {
+                clearTimeout(timeout);
+            }
+
+            timeouts = [];
+
+            for (var box of document.querySelector("#grid").children) {
+                //reset(box);
+                box.style.setProperty("--color", color1);
+                box.style.setProperty("--transform", "scale(1)");
+                box.style.setProperty("--z", "0");
+            }
+
+            clickedSet.clear();
+        }
+    </script>
+</body>
+</html>
