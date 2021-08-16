@@ -12,3 +12,4 @@ a collection of random small projects:
 - [loot box simulator](https://eu33-kent.github.io/random-things/GAMBLING%20GUI)
 - [moving 3d objects with cursor](https://eu33-kent.github.io/random-things/smash3d)
 - [throwing orb with mouse or touch](https://eu33-kent.github.io/random-things/orb)
+- [pulsing grid](https://eu33-kent.github.io/random-things/glowgrid)
