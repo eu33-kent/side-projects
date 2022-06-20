@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>!Free Bitcoin!</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            background-color: #f2f7ff;
+        }
+
+        #container {
+            width: 40vw;
+            height: 10vh;
+            margin: auto;
+            top: 30vh;
+            position: relative;
+        }
+
+        .bar {
+            display: block;
+            width: 50%;
+            height: 20%;
+            appearance: none;
+            margin: auto;
+        }
+
+        .bar::-webkit-progress-bar {
+            background-color: #eee;
+            border-radius: 20px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 25%) inset;
+            padding: 5px;
+        }
+
+        .bar::-webkit-progress-value {
+            border-radius: 20px;
+            background: linear-gradient(90deg, #0a0 0%, #3e3 100%);
+        }
+
+        #text {
+            text-align: center;
+            color: #555;
+            font-weight: normal;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 20px;
+            user-select: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <h1 id="text"></h1>
+        <!--<meter class="bar" id="meter" min="0" max="100" low="50" high="80" optimum="100"></meter>-->
+        <progress class="bar" id="progress" max="100"></progress>
+        <!--<progress></progress>-->
+    </div>
+    
+    <script>
+        const rndInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+        const rnd = (min, max) => Math.random() * (max - min) + min;
+
+        var text = document.querySelector("#text");
+        var progress = document.querySelector("#progress");
+        var process = 0, processCount = 0;
+        var delay = 500;
+        setTimeout(doText, delay);
+        setTimeout(doProgress, delay);
+
+        var words = ["cache", "memory", "download", "nodes", "cryptographics", "hardware", "software", "bandwidth", "plugins", "analytics", "cookies", "cloud"];
+
+        function doText() {
+            if (processCount > rnd(1, 7)) {
+                process = rndInt(0, 4);
+                processCount = 0;
+            }
+            var s = "";
+
+            switch (process) {
+                case 0: // installing
+                    s = "Installing";
+                    break;
+                case 1: // downloading
+                    s = "Downloading";
+                    break;
+                case 2: // optimising
+                    s = "Optimising";
+                    break;
+                case 3: // loading
+                    s = "Loading";
+                    break;
+                case 4: // locating
+                    s = "Locating";
+            }
+
+            text.innerText = s + ": " + words[rndInt(0, words.length-1)] + "//temp_" + rndInt(100, 9999) + "/...";
+            delay = rndInt(100, 1000);
+            if (rndInt(1, 10) == 1) delay += 2000;
+            setTimeout(doProgress, delay);
+            setTimeout(doText, delay);
+            processCount++;
+        }
+
+        function doProgress() {
+            if (progress.value >= 100) progress.value = 0;
+            else progress.value += rnd(1,50);
+        }
+    </script>
+</body>
+</html>
