@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>GA Example</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.8.0/chart.min.js"></script>
+    <style>
+        * {
+            font-family: sans-serif;
+            box-sizing: border-box;
+        }
+
+        body,
+        html {
+            margin: 0;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .container {
+            width: 40vw;
+            margin: 10px auto;
+            padding: 5px;
+            box-shadow: 0 0 1px black;
+            border-radius: 1px;
+        }
+
+        .container>h1 {
+            margin: 0 0 5px;
+            text-align: center;
+        }
+
+        .container>h3 {
+            text-align: center;
+            margin: 0;
+            font-size: large;
+            color: gray;
+            font-weight: normal;
+        }
+
+        .container>h2 {
+            text-align: center;
+            font-size: large;
+            font-weight: normal;
+            margin: 0;
+        }
+
+        form {
+            margin: 10px;
+            text-align: center;
+            border-radius: 1px;
+            box-shadow: 0 0 1px black;
+            padding: 10px;
+        }
+
+        form>div {
+            display: grid;
+            justify-content: space-between;
+            margin: 0 auto 10px;
+            width: 80%;
+        }
+
+        form:first-of-type>div {
+            grid-template-columns: auto auto auto auto;
+        }
+
+        form:nth-of-type(2)>div {
+            display: block;
+        }
+
+        form:nth-of-type(3)>div {
+            grid-template-columns: auto auto auto;
+        }
+
+        input {
+            font-size: medium;
+            width: 100px;
+        }
+
+        input[type="submit"] {
+            cursor: pointer;
+            margin: auto;
+            width: 150px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Visualisation</h1>
+        <h3>Optimal:</h3>
+        <canvas id="chart"></canvas>
+    </div>
+    <div class="container">
+        <h1>GA</h1>
+        <h2 id="generation">Generations:</h2>
+        <h2 id="best">Best Fitness:</h2>
+        <h2 id="average">Average Fitness:</h2>
+        <form action="javascript:setOptimal($('#f').val(),$('#start').val(),$('#end').val(),$('#step').val()); void(0)">
+            <div>
+                <label for="f">Optimal</label>
+                <label for="start">X Axis Start</label>
+                <label for="end">X Axis End</label>
+                <label for="step">X Axis Step</label>
+                <input id="f" type="text" value="Math.sin(x)" required />
+                <input id="start" type="text" value="0" required />
+                <input id="end" type="text" value="2*Math.PI" required />
+                <input id="step" type="text" value="Math.PI/8" required />
+            </div>
+            <input type="submit" value="Update" />
+        </form>
+        <form action="javascript:init(+$('#size').val()); void(0)" id="init">
+            <div>
+                <label for="size">Population Size</label>
+                <br />
+                <input id="size" type="number" min="2" max="10000" value="1000" required />
+            </div>
+            <input type="submit" value="Initialise" />
+        </form>
+        <form action="javascript:evolve(); void(0)" id="evolution">
+            <div>
+                <label for="selection">Tournament Size</label>
+                <label for="crossover">Crossover Probability</label>
+                <label for="mutation">Mutation Probability</label>
+                <input id="selection" type="number" min="2" max="100" value="10" required />
+                <input id="crossover" type="number" min="0" max="100" step="0.1" value="50" required />
+                <input id="mutation" type="number" min="0" max="100" step="0.1" value="1" required />
+            </div>
+            <input type="submit" value="Evolve" />
+        </form>
+    </div>
+    <script>
+        const rndInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+        const rnd = (min, max) => Math.random() * (max - min) + min;
+
+        var optimal = generate("Math.sin(x)", 0, 2 * Math.PI, Math.PI / 8);
+
+        const chart = new Chart("chart", {
+            type: "line",
+            data: {
+                labels: optimal[0],
+                datasets: [{
+                    backgroundColor: "#fff",
+                    borderColor: "#0f0",
+                    tension: 0.4,
+                    data: optimal[1],
+                    label: "Optimal (0 Fitness)"
+                }, {
+                    backgroundColor: "#fff",
+                    borderColor: "#00f",
+                    tension: 0.4,
+                    label: "GA Best"
+                }],
+            }
+        });
+
+        var population = [], generation = 0;
+
+        setOptimal("Math.sin(x)", 0, 2 * Math.PI, Math.PI / 8);
+
+        function evolve() {
+            if (generation < 1) alert("You need to initialise a population first.");
+            else if (checkForm("evolution")) {
+                generation++;
+                doSelection();
+                doCrossover();
+                doMutation();
+                update();
+            }
+        }
+
+        function doSelection() {
+            var size = Math.min(+$("#selection").val(), population.length);
+            var newPop = [getBest(getFitnesses(population))]; // Elitism
+            for (var i = 1; i < population.length; i++) {
+                var tournament = [];
+                for (var j = 0; j < size; j++) tournament.push(population[rndInt(0, population.length - 1)]);
+                newPop.push(getBest(getFitnesses(tournament)));
+            }
+            population = newPop;
+        }
+
+        function doCrossover() {
+            var probability = +$("#crossover").val();
+            var newPop = [getBest(getFitnesses(population))]; // Elitism
+            for (var i = 1; i < population.length; i++) {
+                var point = rndInt(1, optimal[0].length - 2);
+                if (rnd(0, 100) < probability) {
+                    var parent1 = population[i];
+                    var parent2 = population[rndInt(0, population.length - 1)];
+                    newPop.push(parent1.slice(0, point).concat(parent2.slice(point)));
+                } else newPop.push(population[i]);
+            }
+            population = newPop;
+        }
+
+        function doMutation() {
+            var probability = +$("#mutation").val();
+            var amount = (Math.max(...optimal[1]) - Math.min(...optimal[1])) / 10;
+            //var fitness = getBestFitness(getFitnesses(population));
+            //var amount = fitness > 1 ? (Math.max(...optimal[1]) - Math.min(...optimal[1])) / 10 : fitness / 2;
+            for (var i = 0; i < population.length; i++) {
+                for (var j = 0; j < population[i].length; j++) {
+                    if (rnd(0, 100) < probability) population[i][j] += rnd(-amount, amount);
+                }
+            }
+        }
+
+        function init(size) {
+            if (checkForm("init")) {
+                generation = 1;
+                var min = Math.min(...optimal[1]), max = Math.max(...optimal[1]);
+                population = new Array(size).fill(new Array(optimal[0].length).fill());
+                population.forEach((e, i, arr) => arr[i] = e.map(() => rnd(min, max)));
+                update();
+            }
+        }
+
+        function getFitness(xs) {
+            var out = 0;
+            xs.forEach((x, i) => out += (optimal[1][i] - x) ** 2);
+            return out;
+        }
+
+        function getFitnesses(pop) {
+            return pop.map(e => getFitness(e));
+        }
+
+        function getBest(fitnesses) {
+            return population[fitnesses.indexOf(getBestFitness(fitnesses))];
+        }
+
+        function getBestFitness(fitnesses) {
+            return Math.min(...fitnesses);
+        }
+
+        function getAverage(arr) {
+            var sum = 0;
+            arr.forEach(e => sum += e);
+            return sum / arr.length;
+        }
+
+        function generate(f, start, end, step = 1) {
+            var out = [[], []];
+            for (var x = +eval(start).toFixed(3); x <= +eval(end).toFixed(3) + eval(step) / 2; x += eval(step)) {
+                out[1].push(+eval(f).toFixed(3));
+                out[0].push(x.toFixed(3));
+            }
+            return out;
+        }
+
+        function setOptimal(f, start, end, step) {
+            try {
+                optimal = generate(f, start, end, step);
+                $(".container:first-child > h3")[0].innerText = `Optimal: ${f}`;
+                chart.data.labels = optimal[0];
+                chart.data.datasets[0].data = optimal[1];
+                update();
+            } catch (e) {
+                alert(e);
+            }
+        }
+
+        function update() {
+            var fitnesses = getFitnesses(population);
+            var best = getBest(fitnesses);
+            var bestFitness = getBestFitness(fitnesses);
+            var average = getAverage(fitnesses);
+            chart.data.datasets[1].data = best;
+            chart.update();
+            $("#generation")[0].innerText = `Generation: ${generation}`;
+            $("#best")[0].innerText = `Best Fitness: ${bestFitness}`;
+            $("#average")[0].innerText = `Average Fitness: ${average}`;
+        }
+
+        function checkForm(id) {
+            if (!$(`#${id}`)[0].checkValidity()) {
+                $(`#${id}`).find(":submit").click();
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>
