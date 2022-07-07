@@ -14,4 +14,4 @@ a collection of random small projects:
 - [Throwing Orb With Mouse Or Touch](https://eu33-kent.github.io/random-things/orb)
 - [Pulsing Grid](https://eu33-kent.github.io/random-things/glowgrid)
 - [Infinite Random Loading Bar](https://eu33-kent.github.io/random-things/holdon)
-- [Genetic Algorithm Visualisation](https://eu33-kent.github.io/random-things/GA example)
+- [Genetic Algorithm Visualisation](https://eu33-kent.github.io/random-things/GA%20example)
