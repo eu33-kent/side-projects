@@ -15,3 +15,4 @@ a collection of random small projects:
 - [Pulsing Grid](https://eu33-kent.github.io/random-things/glowgrid)
 - [Infinite Random Loading Bar](https://eu33-kent.github.io/random-things/holdon)
 - [Genetic Algorithm Visualisation](https://eu33-kent.github.io/random-things/GA%20example)
+- [Custom JS Combo Box](https://eu33-kent.github.io/random-things/custom%20combo%20box)
