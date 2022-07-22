@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Custom Combo Box</title>
+    <style>
+        /* Page-Specific CSS */
+
+        body,
+        html {
+            --h: 200;
+            --s: 80%;
+            background: linear-gradient(30deg, hsl(var(--h), var(--s), 90%) 0%, hsl(var(--h), var(--s), 70%) 100%);
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            margin: 0;
+        }
+
+        * {
+            font-family: sans-serif;
+        }
+
+        #title {
+            text-align: center;
+            margin: 30px 0 100px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        #container {
+            text-align: center;
+            margin-bottom: 100px;
+        }
+
+        p {
+            text-align: center;
+            font-style: italic;
+            color: #555;
+        }
+
+        .\|label\| {
+            background: hsl(var(--h), var(--s), 95%);
+        }
+
+        .\|options\| {
+            background: hsl(var(--h), var(--s), 95%);
+        }
+
+        .\|option\|:hover {
+            background: hsl(var(--h), var(--s), 85%);
+        }
+
+        .\|option\|.\|selected\| {
+            background: hsl(var(--h), var(--s), 60%);
+        }
+
+        /* Module CSS */
+
+        .\|container\|,
+        .\|label\|,
+        .\|options\|,
+        .\|option\| {
+            box-sizing: border-box;
+        }
+
+        .\|container\| {
+            display: inline-block;
+            position: relative;
+            outline: none;
+            width: 200px;
+            height: 30px;
+        }
+
+        .\|container\|:focus>.\|label\| {
+            border-width: 2px;
+        }
+
+        .\|label\| {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid black;
+            padding: 5px;
+            border-radius: 3px;
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .\|label\|::after {
+            content: "";
+            border: 6px solid transparent;
+            border-top: 6px solid black;
+            transform: translateY(1.5px);
+        }
+
+        .\|options\| {
+            display: none;
+            position: absolute;
+            width: 100%;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 200px;
+            overflow: auto;
+            border: 2px solid black;
+            border-radius: 3px;
+            margin-top: 2px;
+        }
+
+        .\|show\| {
+            display: block;
+        }
+
+        .\|option\| {
+            padding: 2px 5px;
+            user-select: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 id="title">Choose A Color!</h1>
+    <div id="container">
+        <label>Color:</label>
+        <select></select>
+    </div>
+    <p>Control with mouse or keyboard. Can also search!</p>
+    <script>
+        // Page-Specific JS
+
+        const colors = [["red", 0], ["orange", 30], ["gold", 45], ["yellow", 60], ["lime", 85], ["green", 110], ["turquoise", 150], ["cyan", 180], ["blue", 200], ["purple", 270], ["pink", 300]]
+        colors.sort()
+        const elem = document.querySelector("select")
+
+        colors.forEach(color => {
+            elem.insertAdjacentHTML("beforeend", `<option value="${color[1]}">${color[0]}</option>`)
+        })
+
+        // Module JS
+
+        class Select {
+            constructor(elem) {
+                this.old = elem
+                this.elem = document.createElement("div")
+                this.label = document.createElement("span")
+                this.options = this.oldOptions
+                this.optionsList = document.createElement("ul")
+                this.#setup()
+            }
+
+            selectValue(value) {
+                const newSelected = this.options.find(option => {
+                    return option.value === value
+                })
+                const prevSelected = this.selected
+
+                prevSelected.selected = false
+                this.optionsList.querySelector(`[data-value="${prevSelected.value}"]`).classList.remove("|selected|")
+                newSelected.selected = true
+                const newSelectedElem = this.optionsList.querySelector(`[data-value="${newSelected.value}"]`)
+                newSelectedElem.classList.add("|selected|")
+                newSelectedElem.scrollIntoView({ block: "nearest" })
+
+                this.label.innerText = newSelected.label
+            }
+
+            #setup() {
+                this.old.style.display = "none"
+                this.elem.tabIndex = 0
+                this.elem.classList.add("|container|")
+                this.label.classList.add("|label|")
+                this.label.innerText = this.selected.label
+                this.elem.append(this.label)
+                this.optionsList.classList.add("|options|")
+                this.options.forEach(option => {
+                    const elem = document.createElement("li")
+                    elem.classList.add("|option|")
+                    elem.classList.toggle("|selected|", option.selected)
+                    elem.innerText = option.label
+                    elem.dataset.value = option.value
+                    elem.addEventListener("click", () => {
+                        this.selectValue(option.value)
+                    })
+                    this.optionsList.append(elem)
+                })
+                this.elem.append(this.optionsList)
+                this.old.after(this.elem)
+
+                this.elem.addEventListener("click", () => {
+                    this.optionsList.classList.toggle("|show|")
+                })
+
+                this.elem.addEventListener("blur", () => {
+                    this.optionsList.classList.remove("|show|")
+                })
+
+                var timeoutId, search = ""
+                this.elem.addEventListener("keydown", e => {
+                    switch (e.code) {
+                        case "Space":
+                        case "Enter":
+                            this.optionsList.classList.toggle("|show|")
+                            break
+                        case "ArrowUp":
+                            var toSelect = this.options[this.selectedIndex - 1]
+                            break
+                        case "ArrowDown":
+                            toSelect = this.options[this.selectedIndex + 1]
+                            break
+                        case "ArrowLeft":
+                            toSelect = this.options[0]
+                            break
+                        case "ArrowRight":
+                            toSelect = this.options[this.options.length - 1]
+                            break
+                        case "Escape":
+                            this.optionsList.classList.remove("|show|")
+                            break
+                        default: {
+                            clearTimeout(timeoutId)
+                            search += e.key
+                            timeoutId = setTimeout(() => {
+                                search = ""
+                            }, 1000)
+
+                            const searched = this.options.find(option => {
+                                return option.label.toLowerCase().startsWith(search)
+                            })
+                            if (searched) {
+                                this.selectValue(searched.value)
+                            }
+                        }
+                    }
+                    if (toSelect) {
+                        this.selectValue(toSelect.value)
+                    }
+                })
+            }
+
+            get oldOptions() {
+                return [...this.old.querySelectorAll("option")].map(option => {
+                    return {
+                        label: option.label,
+                        value: option.value,
+                        selected: option.selected
+                    }
+                })
+            }
+
+            get selected() {
+                return this.options.find(option => option.selected)
+            }
+
+            get selectedIndex() {
+                return this.options.indexOf(this.selected)
+            }
+        }
+
+        // Page-Specific JS
+
+        const select = new Select(elem)
+
+        setInterval(() => {
+            document.body.style.setProperty("--h", select.selected.value)
+        }, 100)
+    </script>
+</body>
+</html>
