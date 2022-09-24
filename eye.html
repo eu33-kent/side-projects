@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>eye</title>
+    <style>
+        :root {
+            --bgColor: #111;
+        }
+
+        body,
+        html {
+            margin: 0;
+            background: var(--bgColor);
+            display: grid;
+            place-content: center;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #eye {
+            background: #eee;
+            box-shadow: 0 0 20px #000 inset;
+            width: 300px;
+            aspect-ratio: 1 / 1;
+            border-radius: 100% 2%;
+            rotate: 45deg;
+            display: grid;
+            place-items: center;
+            position: relative;
+            margin-bottom: 20vh;
+        }
+
+        #eye::after {
+            content: "";
+            background: var(--bgColor);
+            width: 450px;
+            height: 200px;
+            border-radius: 50%;
+            rotate: -45deg;
+            position: absolute;
+            animation: blink 5s 2s infinite;
+            transform: translateY(-100%);
+        }
+
+        @keyframes blink {
+            0% {
+                transform: translateY(-100%);
+            }
+
+            4% {
+                transform: translateY(0%);
+            }
+
+            8% {
+                transform: translateY(-100%);
+            }
+
+            100% {
+                transform: translateY(-100%);
+            }
+        }
+
+        #iris {
+            background: rgb(120, 20, 150);
+            box-shadow: 0 0 20px #aaaa inset;
+            width: 30%;
+            aspect-ratio: 1 / 1;
+            border-radius: 50%;
+            position: relative;
+            rotate: -45deg;
+            display: grid;
+            place-items: center;
+        }
+
+        #pupil {
+            background: #000;
+            box-shadow: 0 0 20px #fff5;
+            width: 40%;
+            aspect-ratio: 1 / 1;
+            border-radius: 50%;
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="eye">
+        <div id="iris">
+            <div id="pupil"></div>
+        </div>
+    </div>
+    <script>
+        const eye = document.getElementById("eye");
+        var pupil = document.getElementById("pupil");
+        var iris = document.getElementById("iris");
+        var rect = iris.getBoundingClientRect();
+        var irisX = rect.left + rect.width / 2;
+        var irisY = rect.top + rect.height / 2;
+        var mouseX = window.innerWidth / 2;
+        var mouseY = window.innerHeight / 2;
+
+        document.addEventListener("mousemove", e => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            // movePupil();
+        });
+
+        // window.addEventListener("resize", updateIris);
+
+        var x = 0;
+        var increasing = true;
+        var range = 400;
+
+        setInterval(() => {
+            updateIris();
+            movePupil();
+            eye.style.left = x + "px";
+            if (x > range) increasing = false;
+            else if (x < -range) increasing = true;
+            if (increasing) x += 1;
+            else x -= 1;
+        }, 10);
+
+        function movePupil() {
+            var x = mouseX * 100 / (window.innerWidth - (window.innerWidth / 2 - irisX) * 2);
+            var y = mouseY * 100 / (window.innerHeight - (window.innerHeight / 2 - irisY) * 2);
+            x = Math.min(x, 80);
+            x = Math.max(x, 20);
+            y = Math.min(y, 80);
+            y = Math.max(y, 20);
+            x += "%";
+            y += "%";
+            pupil.style.left = x;
+            pupil.style.top = y;
+            pupil.style.translate = `-${x} -${y}`;
+        }
+
+        function updateIris() {
+            rect = iris.getBoundingClientRect();
+            irisX = rect.left + rect.width / 2;
+            irisY = rect.top + rect.height / 2;
+        }
+    </script>
+</body>
+</html>
