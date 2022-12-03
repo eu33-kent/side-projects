@@ -17,3 +17,4 @@ a collection of random small projects:
 - [Genetic Algorithm Visualisation](https://eu33-kent.github.io/random-things/GA%20example)
 - [Custom JS Combo Box](https://eu33-kent.github.io/random-things/custom%20combo%20box)
 - [Eye Follow Cursor](https://eu33-kent.github.io/random-things/eye)
+- [Glass Navigation Sidebar](https://eu33-kent.github.io/random-things/glass%20sidevar)
