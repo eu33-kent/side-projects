@@ -32,7 +32,7 @@
         }
 
         .sidebar {
-            width: 120px;
+            width: fit-content;
             height: 100vh;
             background: hsla(0 0% 0% / 60%);
             box-shadow: 0 0 20px black;
@@ -43,16 +43,12 @@
             flex-direction: column;
         }
 
-        .sidebar.open {
-            width: 360px;
-        }
-
         .sidebar>.toggle {
             cursor: pointer;
             position: absolute;
             top: 60px;
             right: -16px;
-            font-size: 32px;
+            font-size: 2rem;
             line-height: 50%;
             background: hsla(0 0% 20%);
             border-radius: 50%;
@@ -73,8 +69,8 @@
         .sidebar>span {
             text-align: center;
             display: block;
-            padding: 16px 0;
-            font-size: 38px;
+            padding: clamp(0.5rem,2vh,1.5rem);
+            font-size: clamp(1.5rem,4vh,2.5rem);
             font-weight: 300;
             opacity: 0;
             position: absolute;
@@ -89,16 +85,12 @@
         }
 
         .nav-section {
-            font-size: 18px;
-            padding: 0 18px;
-        }
-
-        .nav-section:last-child {
-            padding: 0 20px;
+            font-size: clamp(1rem,2vh,1.5rem);
+            padding: 0 1rem;
         }
 
         .nav-section>span {
-            font-size: 16px;
+            font-size: clamp(0.8rem,2vh,1.3rem);
             font-weight: 300;
             padding: 10px 0;
             display: none;
@@ -123,7 +115,7 @@
         .nav-section li {
             cursor: pointer;
             margin: 4px 0;
-            padding: 10px;
+            padding: clamp(0.3rem,0.5vh,0.5rem);
             border-radius: 5px;
             line-height: 50%;
             display: flex;
@@ -144,7 +136,7 @@
         }
 
         .nav-section li>i {
-            font-size: 32px;
+            font-size: clamp(1rem,4vh,2.2rem);
         }
 
         .nav-section li>span {
@@ -162,7 +154,7 @@
             border-radius: 10px;
             border: none;
             background: hsla(0 0% 80% / 20%);
-            margin: 20px auto;
+            margin: clamp(10px,2vh,20px) auto;
         }
 
         .sidebar>hr:first-of-type {
