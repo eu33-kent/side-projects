@@ -1,4 +1,4 @@
-# random-things
+# side-projects
 a collection of random small projects:
 
 - [Basic Game Loot Generation](https://eu33-kent.github.io/random-things/GAMBLING)
